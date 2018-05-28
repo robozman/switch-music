@@ -1,3 +1,19 @@
+/*
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+
 #include <arpa/inet.h>
 #include <dirent.h>
 #include <stdio.h>
@@ -99,7 +115,7 @@ int main()
     // load TTF storad inside binary
     TTF_Font* inconsolata_regular = TTF_OpenFontRW(SDL_RWFromMem((void*)Inconsolata_Regular_ttf,
                                                        Inconsolata_Regular_ttf_size),
-        1, 20);
+        1, 40);
     SDL_Color white = { 255, 255, 255 };
     SDL_Color black = { 0, 0, 0 };
 
@@ -324,7 +340,7 @@ int render_DirectoryStructure_using_BrowseLayout(SDL_Renderer* renderer,
         SDL_Rect text_destinaton = (SDL_Rect){
             .x=browse_layout->elements[i].x, 
             .y=browse_layout->elements[i].y, 
-            .w=browse_layout->element_height * directory->contents[i].name_length, 
+            .w=browse_layout->element_height * (directory->contents[i].name_length - 1), 
             .h=browse_layout->element_height,
         };
         SDL_RenderCopy(renderer, directory->contents[i].name_texture, NULL, &text_destinaton);
