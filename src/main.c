@@ -170,6 +170,11 @@ int main()
 
         if (kDown & KEY_PLUS) break; 
 
+        if (kDown & KEY_UP) {
+            move_BrowseLayout_selection(&browse_layout, -1);
+            move_DirectoryStruct_selection(&current_directory, -1);
+        }
+
         if (kDown & KEY_DOWN) {
             move_BrowseLayout_selection(&browse_layout, 1);
             move_DirectoryStruct_selection(&current_directory, 1);
