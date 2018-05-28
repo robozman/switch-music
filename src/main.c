@@ -27,6 +27,9 @@
 #include <switch.h>
 
 #include <Inconsolata_Regular_ttf.h>
+#include <Roboto_Medium_ttf.h>
+#include <Roboto_Regular_ttf.h>
+
 
 #define WIDTH 128
 #define HEIGHT 72
@@ -35,55 +38,30 @@
 #define FPS 60
 #define TEXT_SIZE 40
 
+#include "DirectoryItem.h"
+#include "DirectoryStruct.h"
+#include "BrowseLayout.h"
+#include "QueueLayout.h"
+#include "Render.h"
+#include "Cleanup.h"
+
+// choose which font to use
+//#define INCONSOLATA_REGULAR
+#define ROBOTO_REGULAR
+//#define ROBOTO_MEDIUM
+
+
+
+
 static char default_directory_path[] = "/";
 
 // static bool current_directary_rendered = false;
 // static bool current_screen_rendered = false;
 
-typedef struct DirectoryItem {
-    char* name; // should point to dirent_entry.d_name
-    uint16_t name_length;
-    struct dirent dirent_entry;
-    SDL_Texture* name_texture;
-} DirectoryItem;
-
-typedef struct DirectoryStruct {
-    char path[256];
-    DirectoryItem* contents;
-    uint16_t size;
-} DirectoryStruct;
-
-typedef struct BrowseLayout {
-    uint16_t size;
-    uint16_t element_height;
-    SDL_Point* elements;
-} BrowseLayout;
-
-void cleanup_application(SDL_Renderer*, SDL_Window*);
-
-int setup_display();
-
-/*
-        int create_DirectoryStructure(DirectoryStruct*)
-        pass in a DirectoryStruct* with the path member already filled out
-        struct will be fully filled out upon return
-        contents member of struct must be freed
-*/
-int create_DirectoryStructure_without_textures(DirectoryStruct*);
-
-int populate_DirectoryStructure_textures(DirectoryStruct*, SDL_Color, TTF_Font*,
-    SDL_Renderer*);
-
-int create_BrowseLayout(BrowseLayout*);
-
-int create_queue_layout(SDL_Renderer*);
-
-// fill out element_height member of BrowseLayout struct before calling
-int render_DirectoryStructure_using_BrowseLayout(SDL_Renderer*, DirectoryStruct*, BrowseLayout*);
 
 int main()
 {
-    int8_t error = 0;
+    int error = 0;
 
 
     /*-------------Setup SDL-------------------*/
@@ -112,17 +90,34 @@ int main()
 
     /*----------------Setup Font---------------*/
     TTF_Init();
-    // load TTF storad inside binary
+    // load TTF storad inside binary based on font define
+    #if defined(INCONSOLATA_REGULAR)
     TTF_Font* inconsolata_regular = TTF_OpenFontRW(SDL_RWFromMem((void*)Inconsolata_Regular_ttf,
-                                                       Inconsolata_Regular_ttf_size),
-        1, 40);
-    SDL_Color white = { 255, 255, 255 };
-    SDL_Color black = { 0, 0, 0 };
+                                                       Inconsolata_Regular_ttf_size), 1, 40);
+    #elif defined(ROBOTO_REGULAR)
+    TTF_Font* roboto_regular = TTF_OpenFontRW(SDL_RWFromMem((void*)Roboto_Regular_ttf,
+                                                       Roboto_Regular_ttf_size), 1, 40);
+    #elif defined(ROBOTO_MEDIUM)
+    TTF_Font* roboto_medium = TTF_OpenFontRW(SDL_RWFromMem((void*)Roboto_Medium_ttf,
+                                                       Roboto_Medium_ttf_size), 1, 40);
+    #endif
 
-    char title_message[] = "Switch Music";
+    SDL_Color white = { 250,  250, 250 };
+    SDL_Color black = {  66,  66,   66 };
 
-    // as TTF_RenderText_Solid could only be used on SDL_Surface then you have to create the surface first
+    // the program will crash without the following, explain to me why plz
+    char title_message[] = "Switch Music"; 
+    #if defined(INCONSOLATA_REGULAR)
     SDL_Surface* surface_message = TTF_RenderText_Solid(inconsolata_regular, title_message, white);
+
+    #elif defined(ROBOTO_REGULAR)
+    SDL_Surface* surface_message = TTF_RenderText_Solid(roboto_regular, title_message, white);
+
+    #elif defined(ROBOTO_MEDIUM)
+    SDL_Surface* surface_message = TTF_RenderText_Solid(roboto_medium, title_message, white);
+
+    #endif
+
     SDL_FreeSurface(surface_message);
 
     /*
@@ -151,14 +146,25 @@ int main()
     memset(current_directory.path, 0, 256);
     snprintf(current_directory.path, 256, "%s", default_directory_path);
 
-    error = create_DirectoryStructure_without_textures(&current_directory);
+    error = create_sorted_DirectoryStruct_without_textures(&current_directory);
     if (error != 0) {
         cleanup_application(renderer, window);
         return error;
     }
 
-    error = populate_DirectoryStructure_textures(&current_directory, white,
-        inconsolata_regular, renderer);
+
+
+    #if defined(INCONSOLATA_REGULAR)
+    error = populate_DirectoryStruct_textures(&current_directory, white,
+    black, inconsolata_regular, renderer);
+    #elif defined(ROBOTO_REGULAR)
+    error = populate_DirectoryStruct_textures(&current_directory, white,
+    black, roboto_regular, renderer);
+    #elif defined(ROBOTO_MEDIUM)
+    error = populate_DirectoryStruct_textures(&current_directory, white,
+    black, roboto_medium, renderer);
+    #endif
+
     if (error != 0) {
         cleanup_application(renderer, window);
         return error;
@@ -166,13 +172,24 @@ int main()
 
     BrowseLayout browse_layout;
 
-    browse_layout.element_height = 40;
+    browse_layout.element_height = 50;
 
     error = create_BrowseLayout(&browse_layout);
     if (error != 0) {
         cleanup_application(renderer, window);
         return error;
     }
+
+    QueueLayout queue_layout;
+
+    queue_layout.element_height = 50;
+
+    error = create_QueueLayout(&queue_layout);
+    if (error != 0) {
+        cleanup_application(renderer, window);
+        return error;
+    }
+
 
     while (appletMainLoop()) {
         hidScanInput();
@@ -181,8 +198,13 @@ int main()
 
         if (kDown & KEY_PLUS) break; 
 
+        if (kDown & KEY_DOWN) {
+            move_BrowseLayout_selection(&browse_layout, 1);
+            move_DirectoryStruct_selection(&current_directory, 1);
+        }
+
         /*
-                    static uint8_t current_color = 0;
+                    static int current_color = 0;
                     uint32_t current_RGBA = RGBA8_MAXALPHA(0, 0, 0);
                     switch (current_color) {
                             case 0:
@@ -211,9 +233,9 @@ int main()
 
         /* Update the texture and render it. */
         // SDL_UpdateTexture(texture, NULL, framebuf, WIDTH * sizeof(framebuf[0]));
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+        SDL_SetRenderDrawColor(renderer, 66, 66, 66, 1);
         SDL_RenderClear(renderer);
-        render_DirectoryStructure_using_BrowseLayout(renderer, &current_directory, &browse_layout);
+        render_DirectoryStruct_using_BrowseLayout(renderer, &current_directory, &browse_layout);
         SDL_RenderPresent(renderer);
 
         SDL_Delay(1000 / FPS);
@@ -228,124 +250,5 @@ int main()
 
       SDL_Quit();
       */
-    return 0;
-}
-
-void cleanup_application(SDL_Renderer* renderer, SDL_Window* window)
-{
-    // SDL_DestroyTexture(texture);
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
-
-    SDL_Quit();
-}
-
-int create_DirectoryStructure_without_textures(DirectoryStruct* directory)
-{
-    DIR* directory_handle;
-
-    // Open directory
-    directory_handle = opendir(directory->path);
-    if (directory_handle == NULL) {
-        // return 1 if opendir() failed
-        return -1;
-    }
-
-    // Count the amount of elements in the directory
-    directory->size = 0;
-    for (; readdir(directory_handle); directory->size++)
-        ;
-
-    // rewind so we can read the contents again
-    // rewinddir doesn't work on libnx
-    //rewinddir(directory_handle);
-    closedir(directory_handle);
-    opendir(directory->path);
-
-    // allocate memory for array based on the amount of items
-    directory->contents = malloc(directory->size * sizeof(DirectoryItem));
-    if (directory->contents == NULL) {
-        return -1;
-    }
-
-    // iterate through the items and copy their data into the array
-    for (uint16_t i = 0; i < directory->size; i++) {
-        // legibility variable
-        DirectoryItem* current_element = (directory->contents + i);
-        struct dirent* current_file_handle = readdir(directory_handle);
-        
-        if (current_file_handle == NULL) {
-            return -1;
-        }
-        
-        current_element->dirent_entry = *current_file_handle;
-        current_element->name = current_element->dirent_entry.d_name;
-
-        current_element->name_length = strlen(current_element->name);
-    }
-
-    // cleanup
-    closedir(directory_handle);
-
-    return 0;
-}
-
-int populate_DirectoryStructure_textures(DirectoryStruct* directory,
-    SDL_Color color, TTF_Font* font,
-    SDL_Renderer* renderer)
-{
-    for (uint16_t i = 0; i < directory->size; i++) {
-        // legibility variable
-        DirectoryItem* current_element = (directory->contents + i);
-
-        // as TTF_RenderText_Solid could only be used on SDL_Surface then you have
-        // to create the surface first
-        SDL_Surface* name_surface = TTF_RenderText_Solid(font, current_element->name, color);
-
-        // now you can convert it into a texture
-        current_element->name_texture = SDL_CreateTextureFromSurface(renderer, name_surface);
-
-        SDL_FreeSurface(name_surface);
-    }
-
-    return 0;
-}
-
-int create_BrowseLayout(BrowseLayout* browse_layout)
-{
-    // amount of elements displayed on the screen
-    browse_layout->size = WIN_HEIGHT / browse_layout->element_height;
-
-    // allocate array of points corresponding to top-left cornet of elements
-    browse_layout->elements = malloc(browse_layout->size * sizeof(SDL_Point));
-    if (browse_layout->elements == NULL) {
-        return -1;
-    }
-
-    for (uint16_t i = 0; i < browse_layout->size; i++) {
-        browse_layout->elements[i] = (SDL_Point){ .x = 0, .y = i * browse_layout->element_height };
-    }
-
-    return 0;
-}
-
-int render_DirectoryStructure_using_BrowseLayout(SDL_Renderer* renderer, 
-    DirectoryStruct* directory, BrowseLayout* browse_layout)
-{
-    // pick the smaller of the two sizes
-    uint16_t interations = directory->size < browse_layout->size ? directory->size : browse_layout->size;
-
-    for (uint16_t i = 0; i < interations; i++) {
-
-        SDL_Rect text_destinaton = (SDL_Rect){
-            .x=browse_layout->elements[i].x, 
-            .y=browse_layout->elements[i].y, 
-            .w=browse_layout->element_height * (directory->contents[i].name_length - 1), 
-            .h=browse_layout->element_height,
-        };
-        SDL_RenderCopy(renderer, directory->contents[i].name_texture, NULL, &text_destinaton);
-        
-    }
-
     return 0;
 }
