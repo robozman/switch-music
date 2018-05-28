@@ -17,6 +17,7 @@
 
 int create_BrowseLayout(BrowseLayout* browse_layout)
 {
+    browse_layout->in_focus = true;
     browse_layout->posititon_selected = 0;
 
     // amount of elements displayed on the screen

@@ -34,6 +34,8 @@ int render_DirectoryStruct_using_BrowseLayout(SDL_Renderer* renderer,
         starting_element = directory->posititon_selected - browse_layout->size;
     }
 
+    // if browse_layout is in focus, indent the selected entry by 10
+    int indent_offset = browse_layout->in_focus ? 10 : 0;
 
 
     // genereate destination rectanges based on string length and render to them
@@ -47,8 +49,8 @@ int render_DirectoryStruct_using_BrowseLayout(SDL_Renderer* renderer,
         // destination rectangle
         SDL_Rect text_destinaton = (SDL_Rect){
             // x and y values come frome browse layout elements
-            // if element is selecetd, indent by 10
-            .x = i == browse_layout->posititon_selected ? browse_layout->elements[i].x + 10 : browse_layout->elements[i].x, 
+            // if element is selecetd, indent by indent_offset
+            .x = i == browse_layout->posititon_selected ? browse_layout->elements[i].x + indent_offset : browse_layout->elements[i].x, 
             .y = browse_layout->elements[i].y, 
             // w and h from font texture
             .w = w,
@@ -63,14 +65,17 @@ int render_DirectoryStruct_using_BrowseLayout(SDL_Renderer* renderer,
     }
 
     // render selected identifier
-    SDL_Rect selected_identifier = (SDL_Rect){
-        .x = browse_layout->elements[browse_layout->posititon_selected].x,
-        .y = browse_layout->elements[browse_layout->posititon_selected].y + 10,
-        .w = 5,
-        .h = browse_layout->element_height - 10,
-    };
-    SDL_SetRenderDrawColor(renderer, 250, 250, 250, 1);
-    SDL_RenderFillRect(renderer, &selected_identifier);
+
+    if (browse_layout->in_focus) {
+        SDL_Rect selected_identifier = (SDL_Rect){
+            .x = browse_layout->elements[browse_layout->posititon_selected].x,
+            .y = browse_layout->elements[browse_layout->posititon_selected].y + 10,
+            .w = 5,
+            .h = browse_layout->element_height - 10,
+        };
+        SDL_SetRenderDrawColor(renderer, 250, 250, 250, 1);
+        SDL_RenderFillRect(renderer, &selected_identifier);
+    }
 
 
     return 0;

@@ -50,9 +50,6 @@
 #define ROBOTO_REGULAR
 //#define ROBOTO_MEDIUM
 
-
-
-
 static char default_directory_path[] = "/";
 
 // static bool current_directary_rendered = false;
@@ -80,13 +77,6 @@ int main()
         SDL_Quit();
     }
 
-    /*
-      SDL_Texture * texture  = SDL_CreateTexture(renderer,
-     SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, WIDTH, HEIGHT); if
-     (texture == NULL) { fprintf(stderr, "Failed CreateTexture: %s\n",
-     SDL_GetError()); return 1;
-      }
-      */
 
     /*----------------Setup Font---------------*/
     TTF_Init();
@@ -102,8 +92,9 @@ int main()
                                                        Roboto_Medium_ttf_size), 1, 40);
     #endif
 
+    // create color
     SDL_Color white = { 250,  250, 250 };
-    SDL_Color black = {  66,  66,   66 };
+    SDL_Color material_grey = {  66,  66,   66 };
 
     // the program will crash without the following, explain to me why plz
     char title_message[] = "Switch Music"; 
@@ -120,25 +111,6 @@ int main()
 
     SDL_FreeSurface(surface_message);
 
-    /*
-  char title_message[] = "Directory listing for \"/\"";
-
-  // as TTF_RenderText_Solid could only be used on SDL_Surface then you have to
-  create the surface first SDL_Surface* surface_message =
-  TTF_RenderText_Solid(inconsolata_regular, title_message, White);
-
-  //now you can convert it into a texture
-  SDL_Texture* Message = SDL_CreateTextureFromSurface(renderer,
-  surface_message);
-
-  SDL_Rect Message_rect; //create a rect
-  Message_rect.x = 0; //controls the rect's x coordinate
-  Message_rect.y = 0; // controls the rect's y coordinte
-  Message_rect.h = TEXT_SIZE; // controls the width of the rect
-  Message_rect.w = strlen(title_message) * TEXT_SIZE; // controls the height of
-  the rect
-
-      */
 
     /*--------------Default Screen-------------*/
     DirectoryStruct current_directory;
@@ -153,16 +125,16 @@ int main()
     }
 
 
-
+    // ifdef based on font choice
     #if defined(INCONSOLATA_REGULAR)
     error = populate_DirectoryStruct_textures(&current_directory, white,
-    black, inconsolata_regular, renderer);
+    material_grey, inconsolata_regular, renderer);
     #elif defined(ROBOTO_REGULAR)
     error = populate_DirectoryStruct_textures(&current_directory, white,
-    black, roboto_regular, renderer);
+    material_grey, roboto_regular, renderer);
     #elif defined(ROBOTO_MEDIUM)
     error = populate_DirectoryStruct_textures(&current_directory, white,
-    black, roboto_medium, renderer);
+    material_grey, roboto_medium, renderer);
     #endif
 
     if (error != 0) {

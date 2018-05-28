@@ -16,6 +16,8 @@
 #ifndef BROWSELAYOUT_H
 #define BROWSELAYOUT_H
 
+#include <stdbool.h>
+
 #include <SDL2/SDL.h>
 
 #define WIDTH 128
@@ -28,6 +30,7 @@
 typedef struct BrowseLayout {
     int size;
     int element_height;
+    bool in_focus;
     int posititon_selected;
     SDL_Point* elements;
 } BrowseLayout;
