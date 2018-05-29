@@ -41,7 +41,7 @@ Install Command
     sudo pacman -S switch-sdl2_ttf switch-sdl2_image switch-sdl2_mixer \
     switch-sdl2 switch-freetype switch-bzip2 switch-libpng switch-libjpeg \
     switch-zlib switch-libvorbisidec switch-libogg switch-mpg123 switch-libmodplug \
-    libnx
+    libnx general-tools
 
 
 Building
