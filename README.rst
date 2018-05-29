@@ -1,7 +1,7 @@
 Switch Music
 ============
 
-A very WIP music player for the Nintendo Switch. There are literally memory leaks in this program.
+A very WIP music player for the Nintendo Switch.
 
 Built using libnx, SDL2, and SDL2_mixer.
 
