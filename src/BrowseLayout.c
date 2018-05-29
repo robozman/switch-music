@@ -58,3 +58,10 @@ int move_BrowseLayout_selection(BrowseLayout* browse_layout, int movement)
 
     return 0;
 }
+
+int cleanup_BrowseLayout(BrowseLayout* browse_layout)
+{
+    free(browse_layout->elements);
+
+    return 0;
+}

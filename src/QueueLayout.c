@@ -36,3 +36,10 @@ int create_QueueLayout(QueueLayout* queue_layout)
     return 0;
 
 }
+
+int cleanup_QueueLayout(QueueLayout *queue_layout)
+{
+    free(queue_layout->elements);
+
+    return 0;
+}

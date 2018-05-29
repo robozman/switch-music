@@ -18,6 +18,10 @@
 
 #include <SDL2/SDL.h>
 
-void cleanup_application(SDL_Renderer*, SDL_Window*);
+#include "DirectoryStruct.h"
+#include "BrowseLayout.h"
+#include "QueueLayout.h"
+
+void cleanup_application(SDL_Renderer*, SDL_Window*, DirectoryStruct*, BrowseLayout*, QueueLayout*);
 
 #endif

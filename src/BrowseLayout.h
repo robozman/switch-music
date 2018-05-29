@@ -39,4 +39,7 @@ int create_BrowseLayout(BrowseLayout*);
 
 int move_BrowseLayout_selection(BrowseLayout*, int);
 
+int cleanup_BrowseLayout(BrowseLayout*);
+
+
 #endif

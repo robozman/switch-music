@@ -66,6 +66,9 @@ int create_sorted_DirectoryStruct_without_textures(DirectoryStruct* directory)
         memcpy(&(unsorted[i].dirent_entry), current_file_handle, sizeof(struct dirent));
 
         current_element->name_length = strlen(current_element->dirent_entry.d_name);
+
+        // init the texture to NULL to allow for safe cleanup
+        current_element->name_texture = NULL;
         
         // set index varable to allow matching elements between both arrays
         current_element->index = i;
@@ -133,6 +136,23 @@ int move_DirectoryStruct_selection(DirectoryStruct* directory, int movement)
             directory->posititon_selected++;
         }
     }
+
+    return 0;
+}
+
+int cleanup_DirectoryStruct(DirectoryStruct* directory_struct)
+{
+    for (int i = 0; i < directory_struct->size; i++) {
+        // legibility variable
+        DirectoryItem* current_element = directory_struct->contents + i;
+
+        // cleanup texture
+        if (current_element->name_texture != NULL) {
+            SDL_DestroyTexture(current_element->name_texture);
+        }            
+    }
+
+    free(directory_struct);
 
     return 0;
 }

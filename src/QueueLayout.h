@@ -27,7 +27,8 @@ typedef struct QueueLayout {
     SDL_Point* elements;
 } QueueLayout;
 
-
 int create_QueueLayout(QueueLayout*);
+
+int cleanup_QueueLayout(QueueLayout*);
 
 #endif

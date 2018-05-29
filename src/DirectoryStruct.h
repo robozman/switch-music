@@ -44,4 +44,6 @@ int populate_DirectoryStruct_textures(DirectoryStruct*, SDL_Color, SDL_Color,
 
 int move_DirectoryStruct_selection(DirectoryStruct*, int);
 
+int cleanup_DirectoryStruct(DirectoryStruct*);
+
 #endif

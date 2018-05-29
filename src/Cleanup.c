@@ -15,8 +15,32 @@
 
 #include "Cleanup.h"
 
-void cleanup_application(SDL_Renderer* renderer, SDL_Window* window)
+void cleanup_application(SDL_Renderer* renderer, SDL_Window* window, DirectoryStruct* directory_struct, BrowseLayout* browse_layout, QueueLayout* queue_layout)
 {
+    int error = 0;
+
+
+    if (directory_struct != NULL) {
+        error = cleanup_DirectoryStruct(directory_struct);
+        if (error != 0) {
+            exit(error);
+        }
+    }
+    
+    if (directory_struct != NULL) {
+        error = cleanup_BrowseLayout(browse_layout);
+        if (error != 0) {
+            exit(error);
+        }
+    }
+    
+    if (directory_struct != NULL) {
+        error = cleanup_QueueLayout(queue_layout);
+        if (error != 0) {
+            exit(error);
+        }
+    }
+    
     // SDL_DestroyTexture(texture);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
