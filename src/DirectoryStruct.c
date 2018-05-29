@@ -40,7 +40,11 @@ int create_sorted_DirectoryStruct_without_textures(DirectoryStruct* directory)
     opendir(directory->path);
 
     // allocate memory for array based on the amount of items
+    // need duplicate arrays to enable deep copying after sorting
     directory->contents = malloc(directory->size * sizeof(DirectoryItem));
+    DirectoryItem *unsorted = malloc(directory->size * sizeof(DirectoryItem));
+
+
     if (directory->contents == NULL) {
         return -1;
     }
@@ -57,16 +61,33 @@ int create_sorted_DirectoryStruct_without_textures(DirectoryStruct* directory)
             return -1;
         }
         
-        current_element->dirent_entry = *current_file_handle;
-        //current_element->dirent_entry.d_name = current_element->dirent_entry.d_name;
+        // deep copy entire dirent entry to element of both arrays
+        memcpy(&(current_element->dirent_entry), current_file_handle, sizeof(struct dirent));
+        memcpy(&(unsorted[i].dirent_entry), current_file_handle, sizeof(struct dirent));
 
         current_element->name_length = strlen(current_element->dirent_entry.d_name);
+        
+        // set index varable to allow matching elements between both arrays
+        current_element->index = i;
+        unsorted[i].index = i;
     }
 
-    // cleanup
+    // cleanup dirent structures
     closedir(directory_handle);
-    //qsort(void *__base, size_t __nmemb, size_t __size, __compar_fn_t __compar)
+
+    // sort DirectoryItems
+    // note: qsort only shallow copies so the d_name arrays will be mismatched
     qsort(directory->contents, directory->size, sizeof(DirectoryItem), compare_DirectoryItem);
+
+
+    // deep copy the dirent entry from the matching element in the unsorted array
+    // this clears up the d_name mismatch
+    for (int i = 0; i < directory->size; i++) {
+        int current_index = directory->contents[i].index;
+        memcpy(&(directory->contents[i].dirent_entry), &(unsorted[current_index].dirent_entry), sizeof(struct dirent));
+    }
+    
+    free(unsorted);
 
     return 0;
 }

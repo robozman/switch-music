@@ -26,10 +26,6 @@
 #include <SDL2/SDL_ttf.h>
 #include <switch.h>
 
-#include <Inconsolata_Regular_ttf.h>
-#include <Roboto_Medium_ttf.h>
-#include <Roboto_Regular_ttf.h>
-
 
 #define WIDTH 128
 #define HEIGHT 72
@@ -49,6 +45,14 @@
 //#define INCONSOLATA_REGULAR
 #define ROBOTO_REGULAR
 //#define ROBOTO_MEDIUM
+
+#if defined(INCONSOLATA_REGULAR)
+#include <Inconsolata_Regular_ttf.h>
+#elif defined(ROBOTO_REGULAR)
+#include <Roboto_Regular_ttf.h>
+#elif defined(ROBOTO_MEDIUM)
+#include <Roboto_Medium_ttf.h>
+#endif
 
 static char default_directory_path[] = "/";
 

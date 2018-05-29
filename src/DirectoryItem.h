@@ -22,6 +22,7 @@
 
 typedef struct DirectoryItem {
     int name_length;
+    int index;
     struct dirent dirent_entry;
     SDL_Texture* name_texture;
 } DirectoryItem;

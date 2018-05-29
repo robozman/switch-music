@@ -40,5 +40,6 @@ int compare_DirectoryItem(const void *p1, const void *p2)
         int max_size = n1->name_length < n2->name_length ? n1->name_length : n2->name_length;
 
         //strncmp(const char *__s1, const char *__s2, size_t __n)
-        return strncmp(n1->dirent_entry.d_name, n2->dirent_entry.d_name, max_size);
+        return strcmp(n1->dirent_entry.d_name, n2->dirent_entry.d_name);
+        //return strncmp(n1->dirent_entry.d_name, n2->dirent_entry.d_name, max_size);
 }
