@@ -37,7 +37,7 @@ int create_BrowseLayout(BrowseLayout* browse_layout)
     return 0;
 }
 
-int move_BrowseLayout_selection(BrowseLayout* browse_layout, int movement)
+int move_BrowseLayout_selection(BrowseLayout* browse_layout, int movement, int total_elements)
 {
 
     if (movement < 0) { // if moving up
@@ -49,8 +49,8 @@ int move_BrowseLayout_selection(BrowseLayout* browse_layout, int movement)
 
     }
     else if (movement > 0) { // if moving down 
-        // move if below bottom item
-        if (browse_layout->posititon_selected < (browse_layout->size - 1)) {
+        // move if above bottom item and above last rendered_element
+        if ((browse_layout->posititon_selected < (browse_layout->size - 1)) && (browse_layout->posititon_selected < (total_elements - 1))) {
             browse_layout->posititon_selected++;
         }
 

@@ -22,7 +22,6 @@
 #include <SDL2/SDL_ttf.h>
 
 #include "DirectoryItem.h"
-#include "BrowseLayout.h"
 
 typedef struct DirectoryStruct {
     char path[256];

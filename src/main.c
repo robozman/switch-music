@@ -37,6 +37,7 @@
 #include "DirectoryItem.h"
 #include "DirectoryStruct.h"
 #include "QueueLayout.h"
+#include "PlaybackQueue.h"
 #include "Render.h"
 
 // choose which font to use
@@ -171,12 +172,12 @@ int main()
             break;
 
         if (kDown & KEY_UP) {
-            move_BrowseLayout_selection(&browse_layout, -1);
+            move_BrowseLayout_selection(&browse_layout, -1, current_directory.size);
             move_DirectoryStruct_selection(&current_directory, -1);
         }
 
         if (kDown & KEY_DOWN) {
-            move_BrowseLayout_selection(&browse_layout, 1);
+            move_BrowseLayout_selection(&browse_layout, 1, current_directory.size);
             move_DirectoryStruct_selection(&current_directory, 1);
         }
 
@@ -189,6 +190,8 @@ int main()
 
         SDL_Delay(1000 / FPS);
     }
+
+
 
     cleanup_application(renderer, window, &current_directory, &browse_layout, &queue_layout);
 

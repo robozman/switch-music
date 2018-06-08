@@ -20,6 +20,8 @@
 
 #include <SDL2/SDL.h>
 
+#include "DirectoryStruct.h"
+
 #define WIDTH 128
 #define HEIGHT 72
 #define WIN_WIDTH 1280
@@ -37,7 +39,7 @@ typedef struct BrowseLayout {
 
 int create_BrowseLayout(BrowseLayout*);
 
-int move_BrowseLayout_selection(BrowseLayout*, int);
+int move_BrowseLayout_selection(BrowseLayout*, int, int);
 
 int cleanup_BrowseLayout(BrowseLayout*);
 

@@ -142,6 +142,7 @@ int move_DirectoryStruct_selection(DirectoryStruct* directory, int movement)
 
 int cleanup_DirectoryStruct(DirectoryStruct* directory_struct)
 {
+
     for (int i = 0; i < directory_struct->size; i++) {
         // legibility variable
         DirectoryItem* current_element = directory_struct->contents + i;
