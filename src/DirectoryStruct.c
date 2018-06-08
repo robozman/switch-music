@@ -153,7 +153,5 @@ int cleanup_DirectoryStruct(DirectoryStruct* directory_struct)
         }            
     }
 
-    free(directory_struct);
-
     return 0;
 }
